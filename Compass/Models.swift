@@ -1,118 +1,6 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Goal Models
-
-enum GoalLevel: String, CaseIterable, Identifiable, Codable {
-    case lifetime
-    case yearly
-    case monthly
-    case weekly
-    case daily
-
-    var id: String { rawValue }
-
-    var color: Color {
-        switch self {
-        case .lifetime: return Color.blue
-        case .yearly: return Color.indigo
-        case .monthly: return Color.teal
-        case .weekly: return Color.orange
-        case .daily: return Color.pink
-        }
-    }
-
-    var displayName: String {
-        switch self {
-        case .lifetime: return "Lifetime"
-        case .yearly: return "Yearly"
-        case .monthly: return "Monthly"
-        case .weekly: return "Weekly"
-        case .daily: return "Daily"
-        }
-    }
-}
-
-struct GoalNode: Identifiable, Hashable {
-    let id: UUID
-    var title: String
-    var description: String
-    var priority: Int
-    var targetDate: Date?
-    var level: GoalLevel
-    var children: [GoalNode]
-
-    init(
-        id: UUID = UUID(),
-        title: String,
-        description: String = "",
-        priority: Int = 3,
-        targetDate: Date? = nil,
-        level: GoalLevel,
-        children: [GoalNode] = []
-    ) {
-        self.id = id
-        self.title = title
-        self.description = description
-        self.priority = priority
-        self.targetDate = targetDate
-        self.level = level
-        self.children = children
-    }
-}
-
-// MARK: - Task / Schedule Models
-
-struct TaskItem: Identifiable, Hashable {
-    let id: UUID
-    var title: String
-    var goalId: UUID?
-    var durationMinutes: Int
-    var scheduledStart: Date?
-    var scheduledEnd: Date? {
-        scheduledStart.map { $0.addingTimeInterval(TimeInterval(durationMinutes * 60)) }
-    }
-    var isCompleted: Bool
-    var isFlexible: Bool
-
-    init(
-        id: UUID = UUID(),
-        title: String,
-        goalId: UUID? = nil,
-        durationMinutes: Int = 60,
-        scheduledStart: Date? = nil,
-        isCompleted: Bool = false,
-        isFlexible: Bool = true
-    ) {
-        self.id = id
-        self.title = title
-        self.goalId = goalId
-        self.durationMinutes = durationMinutes
-        self.scheduledStart = scheduledStart
-        self.isCompleted = isCompleted
-        self.isFlexible = isFlexible
-    }
-}
-
-struct CalendarBlock: Identifiable, Hashable {
-    let id: UUID
-    var task: TaskItem
-    var start: Date
-    var end: Date
-}
-
-// MARK: - Journaling Models
-
-struct JournalEntry: Identifiable, Hashable {
-    let id: UUID
-    var createdAt: Date
-    var text: String
-    // Simple mood tagging placeholder, to be replaced with AI model output
-    var dominantMoods: [String]
-}
-
-import Foundation
-
 // MARK: - Goal Hierarchy
 
 enum GoalLevel: String, Codable, CaseIterable, Identifiable {
@@ -133,6 +21,17 @@ enum GoalLevel: String, Codable, CaseIterable, Identifiable {
         case .monthly: return "Monthly"
         case .weekly: return "Weekly"
         case .daily: return "Daily"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .futureSelf: return .blue
+        case .lifetime: return .purple
+        case .yearly: return .indigo
+        case .monthly: return .teal
+        case .weekly: return .orange
+        case .daily: return .green
         }
     }
 }
@@ -196,6 +95,14 @@ struct TaskItem: Identifiable, Codable, Hashable {
     }
 }
 
+// Optional higher-level calendar block type if needed later.
+struct CalendarBlock: Identifiable, Hashable {
+    let id: UUID
+    var task: TaskItem
+    var start: Date
+    var end: Date
+}
+
 // MARK: - Journaling
 
 struct JournalEntry: Identifiable, Codable, Hashable {
@@ -235,5 +142,4 @@ struct MonthlyReflection: Identifiable, Codable {
     let goalPriorityAdjustments: [UUID: Int] // goalId -> new priority
     let notes: String
 }
-
 
